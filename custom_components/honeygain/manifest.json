@@ -1,0 +1,10 @@
+{
+  "domain": "honeygain",
+  "name": "Honeygain",
+  "config_flow": true,
+  "documentation": "https://github.com/SplinterHead/hacs-honeygain",
+  "issue_tracker": "https://github.com/SplinterHead/hacs-honeygain/issues",
+  "requirements": ["pyHoneygain==0.3.5"],
+  "codeowners": ["@SplinterHead"],
+  "version": "0.1.0"
+}
