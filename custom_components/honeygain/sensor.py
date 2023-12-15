@@ -79,7 +79,9 @@ class HoneygainAccountSensor(SensorEntity):
         """Create Sensor for displaying Honeygain account details."""
         self.entity_description = sensor_description
         self._honeygain_data = honeygain_data
-        self._attr_unique_id = f"honeygain-{self._honeygain_data.user['referral_code']}-{sensor_description.key}"
+        self._attr_unique_id = self._generate_unique_id(
+            honeygain_data, sensor_description
+        )
         self._attr_native_value = sensor_description.value()
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
@@ -87,6 +89,11 @@ class HoneygainAccountSensor(SensorEntity):
             identifiers={(DOMAIN, self._honeygain_data.user["referral_code"])},
             manufacturer="Honeygain",
             name="Honeygain",
+        )
+
+    def _generate_unique_id(self, honeygain_data, sensor_description):
+        return (
+            f"honeygain-{honeygain_data.user['referral_code']}-{sensor_description.key}"
         )
 
     def update(self) -> None:

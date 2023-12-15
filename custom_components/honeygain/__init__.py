@@ -1,3 +1,4 @@
+"""The Honeygain integration."""
 from __future__ import annotations
 
 from datetime import timedelta
@@ -48,6 +49,7 @@ async def validate_authentication(
     return hg_account
 
 
+# pylint: disable=too-few-public-methods
 class HoneygainData:
     """Poll for new data."""
 

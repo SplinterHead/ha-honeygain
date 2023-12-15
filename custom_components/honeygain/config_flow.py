@@ -27,7 +27,7 @@ class InvalidAuth(HomeAssistantError):
     """Error to indicate there is invalid auth."""
 
 
-class HoneygainHub:
+class HoneygainHub:  # pylint: disable=too-few-public-methods
     """Initialise and authenticate credentials."""
 
     honeygain: HoneyGain
