@@ -82,7 +82,7 @@ class HoneygainAccountSensor(SensorEntity):
         self._attr_unique_id = self._generate_unique_id(
             honeygain_data, sensor_description
         )
-        self._attr_native_value = sensor_description.value()
+        self._attr_native_value = sensor_description.value(honeygain_data)
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
             entry_type=DeviceEntryType.SERVICE,
@@ -99,4 +99,4 @@ class HoneygainAccountSensor(SensorEntity):
     def update(self) -> None:
         """Update Sensor data."""
         self._honeygain_data.update()
-        self._attr_native_value = self.entity_description.value()
+        self._attr_native_value = self.entity_description.value(self._honeygain_data)
