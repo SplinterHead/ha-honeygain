@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hacs-honeygain"
-version = "0.1.0"
+version = "1.1.0"
 description = "Honeygain integration for HomeAssistant"
 authors = ["Lewis England"]
 license = "GNU GPL V3"
@@ -16,6 +16,7 @@ homeassistant = "2023.12"
 black = "^23.11.0"
 isort = "^5.13.1"
 pylint = "^3.0.3"
+python-semantic-release = "^9.8.9"
 
 [build-system]
 requires = ["poetry-core"]
