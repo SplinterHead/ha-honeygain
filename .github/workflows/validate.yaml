@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate-hacs:
+  validate:
+    name: Validate HACS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,3 +17,11 @@ jobs:
           category: integration
       - uses: home-assistant/actions/hassfest@master
         name: "HA Validation"
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm i semantic-release-python
+      - run: npx semantic-release
