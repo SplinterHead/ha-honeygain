@@ -22,9 +22,14 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     needs: validate
+    permissions:
+      id-token: write
+      contents: write
     if: github.ref == 'refs/heads/main' && success()
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: python-semantic-release/python-semantic-release@v9.8.9
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
