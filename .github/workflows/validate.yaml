@@ -28,7 +28,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm i semantic-release-python
       - run: npx semantic-release --yes
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
