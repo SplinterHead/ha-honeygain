@@ -25,9 +25,6 @@ jobs:
     if: github.ref == 'refs/heads/main' && success()
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: python-semantic-release/python-semantic-release@v9.8.9
         with:
-          node-version: 22
-      - run: npx semantic-release --yes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}

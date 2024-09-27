@@ -4,10 +4,6 @@
 .pytest_cache/
 __pycache__/
 
-package-lock.json
-package.json
-node_modules/
-
 *.pyc
 
 config/
