@@ -8,7 +8,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CURRENCY_DOLLAR
+from homeassistant.const import CURRENCY_DOLLAR, DATA_MEGABYTES
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
@@ -26,6 +26,7 @@ class SensorValueEntityDescription(SensorEntityDescription):
 
 
 HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
+    # Account Balance
     SensorValueEntityDescription(
         key="account_balance",
         name="Account balance",
@@ -34,6 +35,14 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         native_unit_of_measurement=CURRENCY_DOLLAR,
         value=lambda x: f'{x.balances.get("payout").get("usd_cents") / 100:.2f}',
     ),
+    # Active Devices
+    SensorValueEntityDescription(
+        key="active_devices",
+        name="Active device count",
+        icon="mdi:server-network",
+        value=lambda x: x.user.get("active_devices_count"),
+    ),
+    # Daily Stats
     SensorValueEntityDescription(
         key="today_earnings",
         name="Today's earnings",
@@ -43,10 +52,33 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         value=lambda x: f'{x.balances.get("realtime").get("usd_cents") / 100:.2f}',
     ),
     SensorValueEntityDescription(
-        key="active_devices",
-        name="Active device count",
-        icon="mdi:server-network",
-        value=lambda x: x.user.get("active_devices_count"),
+        key="today_credits",
+        name="Today's credits",
+        icon="mdi:calendar-today",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats.get("gathering").get("credits"),
+    ),
+    SensorValueEntityDescription(
+        key="today_bandwidth",
+        name="Today's shared bandwidth",
+        icon="mdi:upload",
+        state_class=SensorStateClass.TOTAL,
+        native_unit_of_measurement=DATA_MEGABYTES,
+        value=lambda x: f'{round(x.today_stats.get("gathering").get("bytes"), -4) / 1000000}',
+    ),
+    SensorValueEntityDescription(
+        key="today_referral_credits",
+        name="Today's referral credits",
+        icon="mdi:account-multiple",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats.get("referral").get("credits"),
+    ),
+    SensorValueEntityDescription(
+        key="today_lucky_pot_credits",
+        name="Today's Lucky Pot credits",
+        icon="mdi:gift-open",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats.get("winning").get("credits"),
     ),
 ]
 

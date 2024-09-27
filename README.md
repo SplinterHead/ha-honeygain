@@ -18,8 +18,12 @@ This integration uses a config flow to collect credentials
 The integration will create sensor entities for metrics that relate to your account:
 
 - Account balance
-- Today's current earnings
 - Number of active devices
+- Today's earnings
+- Today's credits
+- Today's shared bandwidth
+- Today's referral earnings
+- Today's Lucky Pot earnings
 
 ### Button
 The integration exposes a button for automating tasks:
