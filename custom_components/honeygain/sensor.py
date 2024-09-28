@@ -1,4 +1,5 @@
 """Sensors for HoneyGain data."""
+
 from collections.abc import Callable
 from dataclasses import dataclass
 

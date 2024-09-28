@@ -1,4 +1,5 @@
 """Constants for the Honeygain integration."""
+
 import logging
 
 DOMAIN = "honeygain"
