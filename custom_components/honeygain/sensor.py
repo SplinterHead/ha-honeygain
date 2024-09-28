@@ -9,7 +9,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CURRENCY_DOLLAR, DATA_MEGABYTES
+from homeassistant.const import CURRENCY_DOLLAR, UnitOfInformation
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
@@ -64,7 +64,7 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         name="Today's shared bandwidth",
         icon="mdi:upload",
         state_class=SensorStateClass.TOTAL,
-        native_unit_of_measurement=DATA_MEGABYTES,
+        native_unit_of_measurement=UnitOfInformation.MEGABYTES,
         value=lambda x: f'{round(x.today_stats.get("gathering").get("bytes"), -4) / 1000000}',
     ),
     SensorValueEntityDescription(
