@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v1.2.1 (2024-09-28)
+
+### Build
+
+* build(deps): update black and format with new rules. update homeassistant to 2024 ([`62e8931`](https://github.com/SplinterHead/ha-honeygain/commit/62e893179f28ac0f911cf718df5633822f527e9b))
+
+### Fix
+
+* fix(sensor): update the megabyte unit of information to the current ENum ([`4b8e20b`](https://github.com/SplinterHead/ha-honeygain/commit/4b8e20b8a44086ff4751f5da8f7d937de0b54d52))
+
 ## v1.2.0 (2024-09-27)
 
 ### Ci
