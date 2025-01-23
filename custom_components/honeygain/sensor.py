@@ -67,6 +67,20 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         value=lambda x: x.today_stats_jt.get("gathering").get("credits"),
     ),
     SensorValueEntityDescription(
+        key="today_total_credits",
+        name="Today's total credits",
+        icon="mdi:calendar-today",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats.get("total").get("credits"),
+    ),
+    SensorValueEntityDescription(
+        key="today_total_credits_jt",
+        name="Today's total JMPT credits",
+        icon="mdi:calendar-today",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats_jt.get("total").get("credits"),
+    ),
+    SensorValueEntityDescription(
         key="today_bandwidth",
         name="Today's shared bandwidth",
         icon="mdi:upload",
