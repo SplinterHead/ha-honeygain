@@ -61,6 +61,8 @@ class HoneygainData:
         self.balances: dict = {}
         self.stats: dict = {}
         self.today_stats: dict = {}
+        self.stats_jt: dict = {}
+        self.today_stats_jt: dict = {}
 
     @Throttle(UPDATE_INTERVAL)
     def update(self) -> None:
@@ -70,6 +72,9 @@ class HoneygainData:
             self.balances = self.honeygain.balances()
             self.stats = self.honeygain.stats()
             self.today_stats = self.honeygain.stats_today()
+            self.stats_jt = self.honeygain.stats_jt()
+            self.today_stats_jt = self.honeygain.stats_today_jt()
+
         except CannotConnect:
             LOGGER.warning("Failed to connect to Honeygain for update")
         except InvalidAuth:
