@@ -60,6 +60,13 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         value=lambda x: x.today_stats.get("gathering").get("credits"),
     ),
     SensorValueEntityDescription(
+        key="today_credits_jt",
+        name="Today's JMPT credits",
+        icon="mdi:calendar-today",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats_jt.get("gathering").get("credits"),
+    ),
+    SensorValueEntityDescription(
         key="today_bandwidth",
         name="Today's shared bandwidth",
         icon="mdi:upload",
@@ -75,11 +82,25 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         value=lambda x: x.today_stats.get("referral").get("credits"),
     ),
     SensorValueEntityDescription(
+        key="today_referral_credits_jt",
+        name="Today's JMPT referral credits",
+        icon="mdi:account-multiple",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats_jt.get("referral").get("credits"),
+    ),
+    SensorValueEntityDescription(
         key="today_lucky_pot_credits",
         name="Today's Lucky Pot credits",
         icon="mdi:gift-open",
         state_class=SensorStateClass.TOTAL,
         value=lambda x: x.today_stats.get("winning").get("credits"),
+    ),
+    SensorValueEntityDescription(
+        key="today_lucky_pot_credits_jt",
+        name="Today's JMPT Lucky Pot credits",
+        icon="mdi:gift-open",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.today_stats_jt.get("winning").get("credits"),
     ),
 ]
 
