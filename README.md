@@ -14,6 +14,11 @@ This integration uses a config flow to collect credentials
 
 ## Entities
 
+### Binary Sensor
+The integration will create a binary sensor for each device linked to your account, tracking:
+
+- Connected status
+
 ### Sensor
 The integration will create sensor entities for metrics that relate to your account:
 

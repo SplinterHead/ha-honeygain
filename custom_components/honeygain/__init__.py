@@ -13,7 +13,7 @@ from pyHoneygain import HoneyGain
 from .config_flow import CannotConnect, InvalidAuth
 from .const import DOMAIN, LOGGER, UPDATE_INTERVAL_MINS
 
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BUTTON]
+PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.BUTTON]
 
 UPDATE_INTERVAL = timedelta(minutes=UPDATE_INTERVAL_MINS)
 
@@ -57,23 +57,30 @@ class HoneygainData:
     def __init__(self, honeygain: HoneyGain) -> None:
         """Create instance ready for data updates."""
         self.honeygain: HoneyGain = honeygain
-        self.user: dict = {}
         self.balances: dict = {}
+        self.devices: dict = {}
         self.stats: dict = {}
-        self.today_stats: dict = {}
         self.stats_jt: dict = {}
+        self.today_stats: dict = {}
         self.today_stats_jt: dict = {}
+        self.user: dict = {}
 
     @Throttle(UPDATE_INTERVAL)
     def update(self) -> None:
         """Pull the latest data."""
         try:
-            self.user = self.honeygain.me()
+            # Use the V1 endpoint to pull basic details
+            self.honeygain.set_api_version(version="/v1", reload=True)
             self.balances = self.honeygain.balances()
             self.stats = self.honeygain.stats()
-            self.today_stats = self.honeygain.stats_today()
             self.stats_jt = self.honeygain.stats_jt()
+            self.today_stats = self.honeygain.stats_today()
             self.today_stats_jt = self.honeygain.stats_today_jt()
+            self.user = self.honeygain.me()
+
+            # Use the V2 endpoint to pull advanced details
+            self.honeygain.set_api_version(version="/v2", reload=True)
+            self.devices = self.honeygain.devices()
 
         except CannotConnect:
             LOGGER.warning("Failed to connect to Honeygain for update")
