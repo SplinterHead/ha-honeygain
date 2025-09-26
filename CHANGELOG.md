@@ -1,5 +1,68 @@
 # CHANGELOG
 
+## v1.4.0 (2025-09-26)
+
+### Build
+
+* build(deps-dev): bump setuptools from 75.5.0 to 78.1.1 (#15)
+
+Bumps [setuptools](https://github.com/pypa/setuptools) from 75.5.0 to 78.1.1.
+- [Release notes](https://github.com/pypa/setuptools/releases)
+- [Changelog](https://github.com/pypa/setuptools/blob/main/NEWS.rst)
+- [Commits](https://github.com/pypa/setuptools/compare/v75.5.0...v78.1.1)
+
+---
+updated-dependencies:
+- dependency-name: setuptools
+  dependency-version: 78.1.1
+  dependency-type: indirect
+...
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt;
+Co-authored-by: dependabot[bot] &lt;49699333+dependabot[bot]@users.noreply.github.com&gt; ([`da22284`](https://github.com/SplinterHead/ha-honeygain/commit/da22284eb84748ec1ba049239d08f4b9e8c74ab5))
+
+### Feature
+
+* feat(sensor): add binary sensor to monitor node connectivity  (#20)
+
+* build(deps): update python packages
+
+* feat(sensor): add binary sensor to monitor node connectivity ([`98b2da9`](https://github.com/SplinterHead/ha-honeygain/commit/98b2da9f9448e46fdbf4b429db0e5c8b6c70a69c))
+
+## v1.3.0 (2025-01-29)
+
+### Build
+
+* build(deps-dev): bump aiohttp from 3.9.1 to 3.10.11
+
+Bumps [aiohttp](https://github.com/aio-libs/aiohttp) from 3.9.1 to 3.10.11.
+- [Release notes](https://github.com/aio-libs/aiohttp/releases)
+- [Changelog](https://github.com/aio-libs/aiohttp/blob/master/CHANGES.rst)
+- [Commits](https://github.com/aio-libs/aiohttp/compare/v3.9.1...v3.10.11)
+
+---
+updated-dependencies:
+- dependency-name: aiohttp
+  dependency-type: indirect
+...
+
+Signed-off-by: dependabot[bot] &lt;support@github.com&gt; ([`b7fe1a8`](https://github.com/SplinterHead/ha-honeygain/commit/b7fe1a8f760554a8c55d14ab7f04a8a468da93e9))
+
+### Unknown
+
+* add sensors for JumpToken balances (#14)
+
+Added JMPT sensors
+
+* Today&#39;s JMPT credits
+* Today&#39;s JMPT Lucky Pot credits
+* Today&#39;s JMPT referral credits
+* Today&#39;s total JMPT credits ([`06fec69`](https://github.com/SplinterHead/ha-honeygain/commit/06fec69cb99f3929b59630ea023d64da02912f21))
+
+* Merge pull request #12 from SplinterHead/dependabot/pip/aiohttp-3.10.11
+
+build(deps-dev): bump aiohttp from 3.9.1 to 3.10.11 ([`7d12ebf`](https://github.com/SplinterHead/ha-honeygain/commit/7d12ebf0d2271cadfccf7dbc61d4895a70b96f58))
+
 ## v1.2.1 (2024-09-28)
 
 ### Build
