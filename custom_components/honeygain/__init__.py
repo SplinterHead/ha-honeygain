@@ -82,6 +82,9 @@ class HoneygainData:
             self.honeygain.set_api_version(version="/v2", reload=True)
             self.devices = self.honeygain.devices()
 
+            # Reset back to the V1 endpoint
+            self.honeygain.set_api_version(version="/v1", reload=True)
+
         except CannotConnect:
             LOGGER.warning("Failed to connect to Honeygain for update")
         except InvalidAuth:
