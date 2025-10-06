@@ -1,7 +1,5 @@
 """Binary sensors for HoneyGain data."""
 
-import logging
-
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
@@ -13,8 +11,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
 from .const import DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -28,9 +24,6 @@ async def async_setup_entry(
         HoneygainDeviceBinarySensor(device) for device in honeygain_data.devices
     ]
     async_add_entities(devices)
-
-    for device in honeygain_data.devices:
-        _LOGGER.error(device)
 
 
 def _generate_binary_sensor_description(device_name: str):
