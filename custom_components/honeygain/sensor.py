@@ -118,6 +118,36 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
     ),
 ]
 
+DEVICE_SENSORS: list[SensorValueEntityDescription] = [
+    SensorValueEntityDescription(
+        key="ip_address",
+        name="IP address",
+        icon="mdi:ip-network",
+        value=lambda x: x.get("ip"),
+    ),
+    SensorValueEntityDescription(
+        key="total_traffic",
+        name="Total traffic",
+        icon="mdi:upload",
+        state_class=SensorStateClass.TOTAL,
+        native_unit_of_measurement=UnitOfInformation.MEGABYTES,
+        value=lambda x: f'{round(x.get("stats").get("total_traffic"), -4) / 1000000}',
+    ),
+    SensorValueEntityDescription(
+        key="total_credits",
+        name="Total credits",
+        icon="mdi:hand-coin",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda x: x.get("stats").get("total_credits"),
+    ),
+    SensorValueEntityDescription(
+        key="last_active",
+        name="Last active",
+        icon="mdi:web-clock",
+        value=lambda x: x.get("last_active_time"),
+    ),
+]
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -126,15 +156,23 @@ async def async_setup_entry(
 ) -> None:
     """Sensor set up for HoneyGain."""
     honeygain_data: HoneygainData = hass.data[DOMAIN][entry.entry_id]
-    entities: list[SensorEntity] = [
+    # List of sensors for the Honeygain Account
+    account_entities: list[SensorEntity] = [
         HoneygainAccountSensor(honeygain_data, sensor_description)
         for sensor_description in HONEYGAIN_SENSORS
     ]
-    async_add_entities(entities)
+    async_add_entities(account_entities)
+    # List of sensors for each Honeygain device
+    for device in honeygain_data.devices:
+        device_entities: list[SensorEntity] = [
+            HoneygainDeviceSensor(honeygain_data, device, sensor_description)
+            for sensor_description in DEVICE_SENSORS
+        ]
+        async_add_entities(device_entities)
 
 
 class HoneygainAccountSensor(SensorEntity):
-    """Sensor to track Honeygain data."""
+    """Sensor to track Honeygain Account data."""
 
     honeygain_data: HoneygainData
     entity_description: SensorValueEntityDescription
@@ -147,24 +185,67 @@ class HoneygainAccountSensor(SensorEntity):
         """Create Sensor for displaying Honeygain account details."""
         self.entity_description = sensor_description
         self._honeygain_data = honeygain_data
-        self._attr_unique_id = self._generate_unique_id(
-            honeygain_data, sensor_description
-        )
+        self._attr_unique_id = self._generate_unique_id()
         self._attr_native_value = sensor_description.value(honeygain_data)
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
             entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, self._honeygain_data.user["referral_code"])},
+            identifiers={(DOMAIN, self._honeygain_data.user.get("referral_code"))},
             manufacturer="Honeygain",
-            name="Honeygain",
+            name="Account",
         )
 
-    def _generate_unique_id(self, honeygain_data, sensor_description):
-        return (
-            f"honeygain-{honeygain_data.user['referral_code']}-{sensor_description.key}"
-        )
+    def _generate_unique_id(self):
+        return f"honeygain-{self._honeygain_data.user['referral_code']}-{self.entity_description.key}"
 
     def update(self) -> None:
         """Update Sensor data."""
         self._honeygain_data.update()
         self._attr_native_value = self.entity_description.value(self._honeygain_data)
+
+
+class HoneygainDeviceSensor(SensorEntity):
+    """Sensor to track Honeygain Device data."""
+
+    honeygain_data: HoneygainData
+    device_data = dict
+    entity_description = SensorValueEntityDescription
+
+    def __init__(
+        self,
+        honeygain_data: HoneygainData,
+        device_data: dict,
+        sensor_description: SensorValueEntityDescription,
+    ) -> None:
+        """Create Sensor for displaying Honeygain device details."""
+        self.entity_description = sensor_description
+        self._honeygain_data = honeygain_data
+        self._device_data = device_data
+        self._attr_unique_id = self._generate_unique_id()
+        self._attr_device_info = DeviceInfo(
+            configuration_url="https://dashboard.honeygain.com/profile",
+            entry_type=DeviceEntryType.SERVICE,
+            identifiers={(DOMAIN, self._generate_device_id())},
+            manufacturer="Honeygain",
+            name=self._device_data.get("title") or self._device_data.get("model"),
+        )
+        self._attr_native_value = self.entity_description.value(self._device_data)
+
+    def _generate_device_id(self):
+        return f"honeygain-{self._device_data.get("ip")}"
+
+    def _generate_unique_id(self):
+        return f"{self._generate_device_id()}-{self.entity_description.key}"
+
+    def update(self) -> None:
+        """Update Sensor data."""
+        self._honeygain_data.update()
+        self._device_data = next(
+            (
+                dev
+                for dev in self._honeygain_data.devices
+                if dev["id"] == self._device_data.get("id")
+            ),
+            None,
+        )
+        self._attr_native_value = self.entity_description.value(self._device_data)

@@ -3,6 +3,7 @@
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
@@ -40,6 +41,13 @@ class HoneygainPotButton(ButtonEntity):
         self._attr_name = self.button_description.name
         self._attr_icon = self.button_description.icon
         self._attr_unique_id = f"honeygain-{self._honeygain_data.user['referral_code']}-{self.button_description.key}"
+        self._attr_device_info = DeviceInfo(
+            configuration_url="https://dashboard.honeygain.com/profile",
+            entry_type=DeviceEntryType.SERVICE,
+            identifiers={(DOMAIN, self._honeygain_data.user.get("referral_code"))},
+            manufacturer="Honeygain",
+            name="Account",
+        )
 
     def press(self) -> None:
         """Handle the button press."""
