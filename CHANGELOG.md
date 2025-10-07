@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v1.4.1 (2025-10-07)
+
+### Fix
+
+* fix(daily_pot): reset the /v1 endpoint for opening the Daily Pot (#25)
+
+* fix(daily_pot): reset the /v1 endpoint for opening the Daily Pot
+
+fixes: #23 ([`d829d9d`](https://github.com/SplinterHead/ha-honeygain/commit/d829d9d52e91b59d8da8ed137c9fe74f534503ec))
+
 ## v1.4.0 (2025-09-26)
 
 ### Build

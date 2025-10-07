@@ -27,6 +27,9 @@ async def async_setup_entry(
     ]
     async_add_entities(devices)
 
+    for device in honeygain_data.devices:
+        _LOGGER.error(device)
+
 
 def _generate_binary_sensor_description(device_name: str):
     return BinarySensorEntityDescription(
