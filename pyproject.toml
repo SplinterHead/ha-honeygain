@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hacs-honeygain"
-version = "1.1.0"
+version = "1.5.0"
 description = "Honeygain integration for HomeAssistant"
 authors = ["Lewis England"]
 license = "GNU GPL V3"

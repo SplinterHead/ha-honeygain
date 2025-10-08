@@ -17,9 +17,12 @@ This integration uses a config flow to collect credentials
 ### Binary Sensor
 The integration will create a binary sensor for each device linked to your account, tracking:
 
-- Connected status
+- Connected status (Offline notifications can be delayed by around 20 minutes. This is a limitation of the Honeygain API)
 
 ### Sensor
+
+**Account**
+
 The integration will create sensor entities for metrics that relate to your account:
 
 - Account balance
@@ -29,6 +32,15 @@ The integration will create sensor entities for metrics that relate to your acco
 - Today's shared bandwidth
 - Today's referral earnings
 - Today's Lucky Pot earnings
+
+**Devices**
+
+Each device discovered will have the following sensors:
+
+- IP Address
+- Last Active
+- Total Credits
+- Total Traffic
 
 ### Button
 The integration exposes a button for automating tasks:
