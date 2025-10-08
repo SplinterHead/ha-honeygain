@@ -46,20 +46,23 @@ class HoneygainAccountSensor(SensorEntity):
         sensor_description: SensorValueEntityDescription,
     ) -> None:
         """Create Sensor for displaying Honeygain account details."""
-        self.entity_description = sensor_description
         self._honeygain_data = honeygain_data
+        self.entity_description = sensor_description
         self._attr_unique_id = self._generate_unique_id()
-        self._attr_native_value = sensor_description.value(honeygain_data)
+        self._attr_has_entity_name = True
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
             entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, self._honeygain_data.user.get("referral_code"))},
+            identifiers={(DOMAIN, self._generate_account_id())},
             manufacturer="Honeygain",
             name="Account",
         )
 
+    def _generate_account_id(self):
+        return f"{DOMAIN}-{self._honeygain_data.user['referral_code']}"
+
     def _generate_unique_id(self):
-        return f"honeygain-{self._honeygain_data.user['referral_code']}-{self.entity_description.key}"
+        return f"{self._generate_account_id()}-{self.entity_description.key}"
 
     def update(self) -> None:
         """Update Sensor data."""
@@ -81,13 +84,13 @@ class HoneygainDeviceSensor(SensorEntity):
         sensor_description: SensorValueEntityDescription,
     ) -> None:
         """Create Sensor for displaying Honeygain device details."""
-        self.entity_description = sensor_description
         self._honeygain_data = honeygain_data
         self._device_data = device_data
+        self.entity_description = sensor_description
         self._attr_unique_id = self._generate_unique_id()
+        self._attr_has_entity_name = True
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
-            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, self._generate_device_id())},
             manufacturer="Honeygain",
             name=self._device_data.get("title") or self._device_data.get("model"),
@@ -95,7 +98,7 @@ class HoneygainDeviceSensor(SensorEntity):
         self._attr_native_value = self.entity_description.value(self._device_data)
 
     def _generate_device_id(self):
-        return f"honeygain-{self._device_data.get("ip")}"
+        return f"{DOMAIN}-{self._device_data.get("ip")}"
 
     def _generate_unique_id(self):
         return f"{self._generate_device_id()}-{self.entity_description.key}"
