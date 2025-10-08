@@ -81,6 +81,7 @@ class HoneygainData:
             # Use the V2 endpoint to pull advanced details
             self.honeygain.set_api_version(version="/v2", reload=True)
             self.devices = self.honeygain.devices()
+            LOGGER.error(self.devices)
 
             # Reset back to the V1 endpoint
             self.honeygain.set_api_version(version="/v1", reload=True)

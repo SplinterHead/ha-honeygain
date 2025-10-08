@@ -3,7 +3,7 @@
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
@@ -46,7 +46,6 @@ class HoneygainDeviceBinarySensor(BinarySensorEntity):
         self._attr_has_entity_name = True
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
-            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, self._generate_device_id())},
             manufacturer="Honeygain",
             name=self._device_data.get("title") or self._device_data.get("model"),
