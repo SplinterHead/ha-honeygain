@@ -1,10 +1,6 @@
 """Binary sensors for HoneyGain data."""
 
-from homeassistant.components.binary_sensor import (
-    BinarySensorDeviceClass,
-    BinarySensorEntity,
-    BinarySensorEntityDescription,
-)
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
@@ -12,6 +8,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
 from .const import DOMAIN
+from .entities import DEVICE_BINARY_SENSORS, BinarySensorValueEntityDescription
 
 
 async def async_setup_entry(
@@ -21,23 +18,12 @@ async def async_setup_entry(
 ) -> None:
     """Binary Sensor set up for HoneyGain."""
     honeygain_data: HoneygainData = hass.data[DOMAIN][entry.entry_id]
-    devices: list[BinarySensorEntity] = [
-        HoneygainDeviceBinarySensor(honeygain_data, device)
-        for device in honeygain_data.devices
-    ]
-    async_add_entities(devices)
-
     for device in honeygain_data.devices:
-        _LOGGER.error(device)
-
-
-def _generate_binary_sensor_description(device_name: str):
-    return BinarySensorEntityDescription(
-        key="status",
-        name=device_name,
-        icon="mdi:cloud-upload",
-        device_class=BinarySensorDeviceClass.CONNECTIVITY,
-    )
+        device_entities: list[BinarySensorEntity] = [
+            HoneygainDeviceBinarySensor(honeygain_data, device, sensor_description)
+            for sensor_description in DEVICE_BINARY_SENSORS
+        ]
+        async_add_entities(device_entities)
 
 
 class HoneygainDeviceBinarySensor(BinarySensorEntity):
@@ -45,10 +31,17 @@ class HoneygainDeviceBinarySensor(BinarySensorEntity):
 
     honeygain_data: HoneygainData
     device_data: dict
+    sensor_description: BinarySensorValueEntityDescription
 
-    def __init__(self, honeygain_data: HoneygainData, device_data: dict) -> None:
+    def __init__(
+        self,
+        honeygain_data: HoneygainData,
+        device_data: dict,
+        sensor_description: BinarySensorValueEntityDescription,
+    ) -> None:
         self._honeygain_data = honeygain_data
         self._device_data = device_data
+        self.entity_description = sensor_description
         self._attr_unique_id = self._generate_unique_id()
         self._attr_has_entity_name = True
         self._attr_device_info = DeviceInfo(
@@ -59,13 +52,11 @@ class HoneygainDeviceBinarySensor(BinarySensorEntity):
             name=self._device_data.get("title") or self._device_data.get("model"),
         )
 
-        self.entity_description = _generate_binary_sensor_description("Status")
-
     def _generate_device_id(self):
-        return f"honeygain-{self._device_data.get("ip")}"
+        return f"{DOMAIN}-{self._device_data.get("ip")}"
 
     def _generate_unique_id(self):
-        return f"{self._generate_device_id()}-status"
+        return f"{self._generate_device_id()}-{self.entity_description.key}"
 
     def update(self) -> None:
         """Update Sensor data."""
@@ -81,4 +72,4 @@ class HoneygainDeviceBinarySensor(BinarySensorEntity):
 
     @property
     def is_on(self) -> bool:
-        return self._device_data.get("status") == "active"
+        return self.entity_description.value(self._device_data)
