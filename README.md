@@ -18,6 +18,7 @@ This integration uses a config flow to collect credentials
 The integration will create a binary sensor for each device linked to your account, tracking:
 
 - Connected status (Offline notifications can be delayed by around 20 minutes. This is a limitation of the Honeygain API)
+- Streaming enabled
 
 ### Sensor
 
@@ -37,10 +38,14 @@ The integration will create sensor entities for metrics that relate to your acco
 
 Each device discovered will have the following sensors:
 
-- IP Address
-- Last Active
-- Total Credits
-- Total Traffic
+- Manufacturer
+- Platform
+- Version
+- IP address
+- Last active
+- Streaming seconds
+- Total credits
+- Total traffic
 
 ### Button
 The integration exposes a button for automating tasks:
