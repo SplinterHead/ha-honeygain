@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## v1.5.0 (2025-10-08)
+
+### Documentation
+
+* docs(sensors): update the list of available sensors ([`a0f42c9`](https://github.com/SplinterHead/ha-honeygain/commit/a0f42c999836a5b3d78629dea03be08cd94bd012))
+
+### Feature
+
+* feat(devices): create a HomeAssistant device per Honeygain device (#24)
+
+* feat(sensor): add binary sensor to monitor node connectivity
+
+* feat(devices): create a HomeAssistant device per Honeygain device for individual tracking
+
+Creates new devices in HomeAssistant and groups all sensors together
+
+Moves the Daily Pot button to the Account group
+
+closes: #21, #22
+
+* feat(sensor): add binary sensor to monitor node connectivity
+
+* build(version): bump version to 1.5.0
+
+* feat(sensors): add more device sensors to expose more of the API ([`6b2908a`](https://github.com/SplinterHead/ha-honeygain/commit/6b2908af21270488dc424aa72fd201e666cf516c))
+
 ## v1.4.1 (2025-10-07)
 
 ### Fix
