@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.5.1 (2025-10-09)
+
+### Fix
+
+* fix(sensors): append the device name to all sensors (#28) ([`e4cc64e`](https://github.com/SplinterHead/ha-honeygain/commit/e4cc64e91adf2d6112085f0fc457ad1bec9e6593))
+
 ## v1.5.0 (2025-10-08)
 
 ### Documentation
