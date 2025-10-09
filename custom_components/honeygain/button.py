@@ -17,7 +17,7 @@ async def async_setup_entry(
 ) -> None:
     """Button set up for HoneyGain."""
     honeygain_data: HoneygainData = hass.data[DOMAIN][entry.entry_id]
-    buttons: list[ButtonEntity] = [HoneygainPotButton(hass, honeygain_data)]
+    buttons: list[ButtonEntity] = [HoneygainPotButton(honeygain_data)]
     async_add_entities(buttons)
 
 
@@ -28,9 +28,8 @@ class HoneygainPotButton(ButtonEntity):
     button_description: ButtonEntityDescription
     _honeygain_data: HoneygainData
 
-    def __init__(self, hass: HomeAssistant, honeygain_data: HoneygainData) -> None:
+    def __init__(self, honeygain_data: HoneygainData) -> None:
         """Initialise a button."""
-        self.hass = hass
         self._honeygain_data = honeygain_data
         self.button_description = ButtonEntityDescription(
             key="open_lucky_pot",
@@ -40,14 +39,20 @@ class HoneygainPotButton(ButtonEntity):
         self.entity_id = f"button.{self.button_description.key}"
         self._attr_name = self.button_description.name
         self._attr_icon = self.button_description.icon
-        self._attr_unique_id = f"honeygain-{self._honeygain_data.user['referral_code']}-{self.button_description.key}"
+        self._attr_unique_id = self._generate_unique_id()
         self._attr_device_info = DeviceInfo(
             configuration_url="https://dashboard.honeygain.com/profile",
             entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, self._honeygain_data.user.get("referral_code"))},
+            identifiers={(DOMAIN, self._generate_button_id())},
             manufacturer="Honeygain",
             name="Account",
         )
+
+    def _generate_button_id(self):
+        return f"{DOMAIN}-{self._honeygain_data.user['referral_code']}"
+
+    def _generate_unique_id(self):
+        return f"{self._generate_button_id()}-{self.button_description.key}"
 
     def press(self) -> None:
         """Handle the button press."""
