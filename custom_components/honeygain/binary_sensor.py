@@ -60,14 +60,11 @@ class HoneygainDeviceBinarySensor(BinarySensorEntity):
     def update(self) -> None:
         """Update Sensor data."""
         self._honeygain_data.update()
-        self._device_data = next(
-            (
-                dev
-                for dev in self._honeygain_data.devices
-                if dev["id"] == self._device_data.get("id")
-            ),
-            None,
-        )
+        device_data = self._honeygain_data.get_device(self._device_data.get("id"))
+        # Removed from the account: unavailable, the old data keeps the id to look up
+        self._attr_available = device_data is not None
+        if device_data is not None:
+            self._device_data = device_data
 
     @property
     def is_on(self) -> bool:

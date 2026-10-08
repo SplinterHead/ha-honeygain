@@ -90,6 +90,10 @@ class HoneygainData:
         except InvalidAuth:
             LOGGER.warning("Failed to authenticate with Honeygain for update")
 
+    def get_device(self, device_id: str) -> dict | None:
+        """Return the device with this id, or None if it is no longer reported."""
+        return next((dev for dev in self.devices if dev["id"] == device_id), None)
+
     def open_daily_pot(self) -> None:
         """Open the daily pot if it's available."""
         try:

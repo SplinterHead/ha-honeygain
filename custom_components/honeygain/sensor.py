@@ -106,12 +106,9 @@ class HoneygainDeviceSensor(SensorEntity):
     def update(self) -> None:
         """Update Sensor data."""
         self._honeygain_data.update()
-        self._device_data = next(
-            (
-                dev
-                for dev in self._honeygain_data.devices
-                if dev["id"] == self._device_data.get("id")
-            ),
-            None,
-        )
-        self._attr_native_value = self.entity_description.value(self._device_data)
+        device_data = self._honeygain_data.get_device(self._device_data.get("id"))
+        # Removed from the account: unavailable, the old data keeps the id to look up
+        self._attr_available = device_data is not None
+        if device_data is not None:
+            self._device_data = device_data
+            self._attr_native_value = self.entity_description.value(self._device_data)
