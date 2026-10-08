@@ -52,7 +52,7 @@ class HoneygainDeviceBinarySensor(BinarySensorEntity):
         )
 
     def _generate_device_id(self):
-        return f"{DOMAIN}-{self._device_data.get("ip")}"
+        return f"{DOMAIN}-{self._device_data.get("id")}"
 
     def _generate_unique_id(self):
         return f"{self._generate_device_id()}-{self.entity_description.key}"

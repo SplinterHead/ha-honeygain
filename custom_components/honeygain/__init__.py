@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.util import Throttle
 from pyHoneygain import HoneyGain
 
@@ -23,6 +26,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hg_account = await validate_authentication(hass, entry)
     await hass.async_add_executor_job(hg_account.update)
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = hg_account
+    # Minor version 2: device ids no longer built from the IP
+    if entry.minor_version < 2:
+        await _migrate_ip_identifiers(hass, entry, hg_account.devices)
+        hass.config_entries.async_update_entry(entry, minor_version=2)
 
     # Set up all platforms for this device/entry.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -36,6 +43,49 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: ConfigEntry, device_entry: dr.DeviceEntry
+) -> bool:
+    """Allow removing devices that Honeygain no longer reports."""
+    hg_account: HoneygainData = hass.data[DOMAIN][entry.entry_id]
+    current = {f"{DOMAIN}-{dev.get('id')}" for dev in hg_account.devices}
+    current.add(f"{DOMAIN}-{hg_account.user.get('referral_code')}")
+    return not any(
+        domain == DOMAIN and ident in current
+        for domain, ident in device_entry.identifiers
+    )
+
+
+async def _migrate_ip_identifiers(
+    hass: HomeAssistant, entry: ConfigEntry, devices: list[dict]
+) -> None:
+    """Move devices and entities from the old IP based ids to the device id."""
+    devices = [dev for dev in devices if dev.get("id")]
+    ip_count = Counter(dev.get("ip") for dev in devices)
+    # An IP shared by several clients can't tell which one the old entries belong to
+    new_ids = {
+        f"{DOMAIN}-{dev.get('ip')}": f"{DOMAIN}-{dev['id']}"
+        for dev in devices
+        if ip_count[dev.get("ip")] == 1
+    }
+
+    dev_reg = dr.async_get(hass)
+    for device in dr.async_entries_for_config_entry(dev_reg, entry.entry_id):
+        for domain, ident in device.identifiers:
+            if domain == DOMAIN and ident in new_ids:
+                dev_reg.async_update_device(
+                    device.id, new_identifiers={(DOMAIN, new_ids[ident])}
+                )
+
+    def _new_unique_id(entity: er.RegistryEntry) -> dict | None:
+        old_id, _, key = entity.unique_id.rpartition("-")
+        if old_id in new_ids:
+            return {"new_unique_id": f"{new_ids[old_id]}-{key}"}
+        return None
+
+    await er.async_migrate_entries(hass, entry.entry_id, _new_unique_id)
 
 
 async def validate_authentication(
