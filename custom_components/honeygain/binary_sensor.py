@@ -8,7 +8,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
 from .const import DOMAIN
-from .entities import DEVICE_BINARY_SENSORS, BinarySensorValueEntityDescription
+from .entities import (
+    DEVICE_BINARY_SENSORS,
+    BinarySensorValueEntityDescription,
+    HoneygainAvailability,
+)
 
 
 async def async_setup_entry(
@@ -26,7 +30,7 @@ async def async_setup_entry(
         async_add_entities(device_entities)
 
 
-class HoneygainDeviceBinarySensor(BinarySensorEntity):
+class HoneygainDeviceBinarySensor(HoneygainAvailability, BinarySensorEntity):
     """Binary sensor to track Honeygain device."""
 
     honeygain_data: HoneygainData

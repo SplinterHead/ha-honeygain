@@ -9,7 +9,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
 from .const import DOMAIN
-from .entities import DEVICE_SENSORS, HONEYGAIN_SENSORS, SensorValueEntityDescription
+from .entities import (
+    DEVICE_SENSORS,
+    HONEYGAIN_SENSORS,
+    HoneygainAvailability,
+    SensorValueEntityDescription,
+)
 
 
 async def async_setup_entry(
@@ -34,7 +39,7 @@ async def async_setup_entry(
         async_add_entities(device_entities)
 
 
-class HoneygainAccountSensor(SensorEntity):
+class HoneygainAccountSensor(HoneygainAvailability, SensorEntity):
     """Sensor to track Honeygain Account data."""
 
     honeygain_data: HoneygainData
@@ -70,7 +75,7 @@ class HoneygainAccountSensor(SensorEntity):
         self._attr_native_value = self.entity_description.value(self._honeygain_data)
 
 
-class HoneygainDeviceSensor(SensorEntity):
+class HoneygainDeviceSensor(HoneygainAvailability, SensorEntity):
     """Sensor to track Honeygain Device data."""
 
     honeygain_data: HoneygainData

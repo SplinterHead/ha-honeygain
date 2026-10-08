@@ -8,6 +8,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HoneygainData
 from .const import DOMAIN
+from .entities import HoneygainAvailability
 
 
 async def async_setup_entry(
@@ -21,7 +22,7 @@ async def async_setup_entry(
     async_add_entities(buttons)
 
 
-class HoneygainPotButton(ButtonEntity):
+class HoneygainPotButton(HoneygainAvailability, ButtonEntity):
     """Generate buttons for Honeygain actions."""
 
     hass: HomeAssistant

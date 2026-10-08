@@ -7,6 +7,20 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.components.sensor import SensorEntityDescription, SensorStateClass
 from homeassistant.const import CURRENCY_DOLLAR, UnitOfInformation
+from homeassistant.helpers.entity import Entity
+
+from . import HoneygainData
+
+
+class HoneygainAvailability(Entity):
+    """Entity mixin: unavailable while Honeygain can't be reached."""
+
+    _honeygain_data: "HoneygainData"
+
+    @property
+    def available(self) -> bool:
+        """Return if the last Honeygain update succeeded."""
+        return self._honeygain_data.available and super().available
 
 
 @dataclass
