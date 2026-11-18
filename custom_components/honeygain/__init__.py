@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
@@ -23,6 +24,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hg_account = await validate_authentication(hass, entry)
     await hass.async_add_executor_job(hg_account.update)
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = hg_account
+    # Entities are made at setup: a client added later needs a reload
+    hg_account.known_ids = {dev.get("id") for dev in hg_account.devices}
+    hg_account.on_new_device = lambda: hass.add_job(
+        hass.config_entries.async_reload, entry.entry_id
+    )
 
     # Set up all platforms for this device/entry.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -64,6 +70,8 @@ class HoneygainData:
         self.today_stats: dict = {}
         self.today_stats_jt: dict = {}
         self.user: dict = {}
+        self.known_ids: set = set()
+        self.on_new_device: Callable[[], None] | None = None
 
     @Throttle(UPDATE_INTERVAL)
     def update(self) -> None:
@@ -81,6 +89,10 @@ class HoneygainData:
             # Use the V2 endpoint to pull advanced details
             self.honeygain.set_api_version(version="/v2", reload=True)
             self.devices = self.honeygain.devices()
+            if self.on_new_device and self.devices and (
+                {d.get("id") for d in self.devices} - self.known_ids
+            ):
+                self.on_new_device()
 
             # Reset back to the V1 endpoint
             self.honeygain.set_api_version(version="/v1", reload=True)
