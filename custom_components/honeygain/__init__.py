@@ -7,7 +7,9 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.util import Throttle
+import requests
 from pyHoneygain import HoneyGain
 
 from .config_flow import CannotConnect, InvalidAuth
@@ -21,6 +23,11 @@ UPDATE_INTERVAL = timedelta(minutes=UPDATE_INTERVAL_MINS)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Honeygain from a config entry."""
     hg_account = await validate_authentication(hass, entry)
+    if entry.unique_id is None:
+        # Older entries have none: lets the config flow spot duplicates
+        hass.config_entries.async_update_entry(
+            entry, unique_id=entry.data[CONF_EMAIL].lower()
+        )
     await hass.async_add_executor_job(hg_account.update)
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = hg_account
 
@@ -44,10 +51,24 @@ async def validate_authentication(
     """Create and authenticate an API instance."""
     honeygain = HoneyGain()
     await hass.async_add_executor_job(
-        honeygain.login, entry.data[CONF_EMAIL], entry.data[CONF_PASSWORD]
+        _login, honeygain, entry.data[CONF_EMAIL], entry.data[CONF_PASSWORD]
     )
     hg_account = HoneygainData(honeygain)
     return hg_account
+
+
+def _login(honeygain: HoneyGain, email: str, password: str) -> None:
+    """Log in, telling rejected credentials apart from other failures."""
+    # pyHoneygain's login raises the same KeyError for both
+    answer = requests.post(
+        f"{honeygain.API_BASE_URL}/users/tokens",
+        json={"email": email, "password": password},
+        timeout=30,
+    )
+    if answer.status_code == 401:
+        raise ConfigEntryAuthFailed("Honeygain rejected the credentials")
+    answer.raise_for_status()
+    honeygain.set_jwt_token(answer.json()["data"]["access_token"])
 
 
 # pylint: disable=too-few-public-methods
