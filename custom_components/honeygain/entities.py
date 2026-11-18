@@ -38,7 +38,6 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         key="today_earnings",
         name="Today's earnings",
         icon="mdi:calendar-today",
-        state_class=SensorStateClass.TOTAL,
         native_unit_of_measurement=CURRENCY_DOLLAR,
         value=lambda x: f'{x.balances.get("realtime").get("usd_cents") / 100:.2f}',
     ),
@@ -46,7 +45,6 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         key="today_credits",
         name="Today's credits",
         icon="mdi:calendar-today",
-        state_class=SensorStateClass.TOTAL,
         value=lambda x: x.today_stats.get("gathering").get("credits"),
     ),
     SensorValueEntityDescription(
@@ -60,7 +58,6 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         key="today_total_credits",
         name="Today's total credits",
         icon="mdi:calendar-today",
-        state_class=SensorStateClass.TOTAL,
         value=lambda x: x.today_stats.get("total").get("credits"),
     ),
     SensorValueEntityDescription(
@@ -74,7 +71,6 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         key="today_bandwidth",
         name="Today's shared bandwidth",
         icon="mdi:upload",
-        state_class=SensorStateClass.TOTAL,
         native_unit_of_measurement=UnitOfInformation.MEGABYTES,
         value=lambda x: f'{round(x.today_stats.get("gathering").get("bytes"), -4) / 1000000}',
     ),
@@ -82,7 +78,6 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         key="today_referral_credits",
         name="Today's referral credits",
         icon="mdi:account-multiple",
-        state_class=SensorStateClass.TOTAL,
         value=lambda x: x.today_stats.get("referral").get("credits"),
     ),
     SensorValueEntityDescription(
@@ -96,7 +91,6 @@ HONEYGAIN_SENSORS: list[SensorValueEntityDescription] = [
         key="today_lucky_pot_credits",
         name="Today's Lucky Pot credits",
         icon="mdi:gift-open",
-        state_class=SensorStateClass.TOTAL,
         value=lambda x: x.today_stats.get("winning").get("credits"),
     ),
     SensorValueEntityDescription(
