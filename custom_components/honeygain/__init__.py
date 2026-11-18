@@ -59,7 +59,6 @@ class HoneygainData:
         self.honeygain: HoneyGain = honeygain
         self.balances: dict = {}
         self.devices: dict = {}
-        self.stats: dict = {}
         self.stats_jt: dict = {}
         self.today_stats: dict = {}
         self.today_stats_jt: dict = {}
@@ -72,7 +71,6 @@ class HoneygainData:
             # Use the V1 endpoint to pull basic details
             self.honeygain.set_api_version(version="/v1", reload=True)
             self.balances = self.honeygain.balances()
-            self.stats = self.honeygain.stats()
             self.stats_jt = self.honeygain.stats_jt()
             self.today_stats = self.honeygain.stats_today()
             self.today_stats_jt = self.honeygain.stats_today_jt()
