@@ -7,6 +7,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import Throttle
 from pyHoneygain import HoneyGain
 
@@ -93,7 +94,9 @@ class HoneygainData:
     def open_daily_pot(self) -> None:
         """Open the daily pot if it's available."""
         try:
-            self.honeygain.open_honeypot()
-        except Exception as exc:
-            LOGGER.error("Failed to open daily pot: %s", exc)
-            raise Exception from exc
+            opened = self.honeygain.open_honeypot()["success"]
+        except Exception as exc:  # pylint: disable=broad-except
+            raise HomeAssistantError(f"Failed to open the Lucky Pot: {exc!r}") from exc
+        # pyHoneygain gives up quietly when the pot is already open or not ready
+        if not opened:
+            raise HomeAssistantError("Lucky Pot already opened or not available yet")

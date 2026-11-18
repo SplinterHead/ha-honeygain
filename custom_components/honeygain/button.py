@@ -57,4 +57,3 @@ class HoneygainPotButton(ButtonEntity):
     def press(self) -> None:
         """Handle the button press."""
         self._honeygain_data.open_daily_pot()
-        self._honeygain_data.update()
