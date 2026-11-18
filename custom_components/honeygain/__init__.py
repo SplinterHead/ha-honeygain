@@ -7,6 +7,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.util import Throttle
 from pyHoneygain import HoneyGain
 
@@ -23,6 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hg_account = await validate_authentication(hass, entry)
     await hass.async_add_executor_job(hg_account.update)
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = hg_account
+    _remove_jmpt_entities(hass, entry)
 
     # Set up all platforms for this device/entry.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -36,6 +38,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+def _remove_jmpt_entities(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Drop the JMPT sensors left in the registry: JumpTask retired JMPT."""
+    ent_reg = er.async_get(hass)
+    for entity in er.async_entries_for_config_entry(ent_reg, entry.entry_id):
+        if entity.unique_id.endswith("_jt"):
+            ent_reg.async_remove(entity.entity_id)
 
 
 async def validate_authentication(
@@ -60,9 +70,7 @@ class HoneygainData:
         self.balances: dict = {}
         self.devices: dict = {}
         self.stats: dict = {}
-        self.stats_jt: dict = {}
         self.today_stats: dict = {}
-        self.today_stats_jt: dict = {}
         self.user: dict = {}
 
     @Throttle(UPDATE_INTERVAL)
@@ -73,9 +81,7 @@ class HoneygainData:
             self.honeygain.set_api_version(version="/v1", reload=True)
             self.balances = self.honeygain.balances()
             self.stats = self.honeygain.stats()
-            self.stats_jt = self.honeygain.stats_jt()
             self.today_stats = self.honeygain.stats_today()
-            self.today_stats_jt = self.honeygain.stats_today_jt()
             self.user = self.honeygain.me()
 
             # Use the V2 endpoint to pull advanced details
